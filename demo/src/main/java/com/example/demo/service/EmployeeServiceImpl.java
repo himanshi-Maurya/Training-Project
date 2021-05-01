@@ -1,5 +1,7 @@
-package com.example.demo.employee;
+package com.example.demo.service;
 
+import com.example.demo.model.Employee;
+import com.example.demo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     EmployeeRepository employeeRepository;
 
 
-
     @Override
     public Employee getEmployeeById(Long id) {
         Optional<Employee> emp = employeeRepository.findById(id);
@@ -23,7 +24,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<Employee> getAllEmployee() {
         List<Employee> result = employeeRepository.findAll();
-        if(result.size() > 0) {
+        if (result.size() > 0) {
             return result;
         } else {
             return new ArrayList<Employee>();
@@ -39,14 +40,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public String deleteEmployee(Long id) {
         employeeRepository.deleteById(id);
-           return "Success";
+        return "Success";
     }
 
     @Override
     public Employee updateEmployee(Employee employee) {
 
         Optional<Employee> emp = employeeRepository.findById(employee.getEmp_id());
-        if(emp.isPresent()) {
+        if (emp.isPresent()) {
             employeeRepository.save(employee);
             return employee;
         } else {

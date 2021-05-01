@@ -1,4 +1,4 @@
-package com.example.demo.employee;
+package com.example.demo.model;
 
 import javax.persistence.*;
 
@@ -8,21 +8,26 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long emp_id;
+
     private String emp_name;
     private Integer age;
     private String department;
-
+    private int salary;
+    private String email_id;
 
 
     public Employee(Long emp_id,
                     String emp_name,
                     Integer age,
-                    String department) {
+                    String department, int salary, String email_id) {
         this.emp_id = emp_id;
         this.emp_name = emp_name;
         this.age = age;
         this.department = department;
+        this.salary = salary;
+        this.email_id = email_id;
     }
+
     public Employee() {
 
     }
@@ -59,6 +64,23 @@ public class Employee {
         this.department = department;
     }
 
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+
+    public String getEmail_id() {
+        return email_id;
+    }
+
+    public void setEmail_id(String email_id) {
+        this.email_id = email_id;
+    }
+
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -66,7 +88,8 @@ public class Employee {
                 ", emp_name='" + emp_name + '\'' +
                 ", age=" + age +
                 ", department='" + department + '\'' +
+                ", salary=" + salary +
+                ", email_id='" + email_id + '\'' +
                 '}';
     }
-
 }

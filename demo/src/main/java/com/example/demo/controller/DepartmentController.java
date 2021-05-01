@@ -1,5 +1,8 @@
-package com.example.demo.employee;
+package com.example.demo.controller;
 
+import com.example.demo.model.Department;
+import com.example.demo.repository.DepartmentRepository;
+import com.example.demo.Exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +33,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/api/department/{id}")
-    public ResponseEntity<Department> getDepartmentById(@PathVariable(value = "id") long id) throws ResourceNotFoundException{
+    public ResponseEntity<Department> getDepartmentById(@PathVariable(value = "id") long id) throws ResourceNotFoundException {
         Department department = departmentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Department not found for this id ::"+id));
         return ResponseEntity.ok().body(department);
     }

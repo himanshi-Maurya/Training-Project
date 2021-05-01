@@ -1,8 +1,10 @@
-package com.example.demo.employee;
+package com.example.demo.controller;
 
+import com.example.demo.model.Employee;
+import com.example.demo.repository.EmployeeRepository;
+import com.example.demo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,7 +22,7 @@ public class EmployeeController {
 
 
     @GetMapping("/api/employee")
-    public List<Employee> getAllEmployees(){
+    public List<Employee> getAllEmployees() {
         return employeeService.getAllEmployee();
     }
 
@@ -39,35 +41,29 @@ public class EmployeeController {
 
 
     @PostMapping("/api/employee")
-   public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee) {
         employeeService.createEmployee(employee);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(employee.getEmp_id()).toUri();
         return ResponseEntity.created(location).build();
     }
 
-//    @PostMapping("/api/employee")
-//    public Employee createEmployee(@Validated @RequestBody Employee employee ){
-//        return employeeService.createEmployee(employee);
-//    }
-
-
-
 
     @GetMapping("/api/employee/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "id") Long employeeId) {
- Employee employee = employeeService.getEmployeeById(employeeId);
- return ResponseEntity.ok().body(employee);
+        Employee employee = employeeService.getEmployeeById(employeeId);
+        return ResponseEntity.ok().body(employee);
     }
 
     @PutMapping("/api/employee/{id}")
     public Employee updateEmployee(@PathVariable(value = "id") Long employeeId,
-                                                   @RequestBody Employee employee) {
-       employee.setEmp_id(employeeId);
-       return employeeService.updateEmployee(employee);
+                                   @RequestBody Employee employee) {
+        employee.setEmp_id(employeeId);
+        return employeeService.updateEmployee(employee);
     }
+
     @DeleteMapping("/api/employee/{id}")
-  public String deleteEmployee(@PathVariable(value = "id") Long employeeId){
+    public String deleteEmployee(@PathVariable(value = "id") Long employeeId) {
         employeeService.deleteEmployee(employeeId);
         return "Success";
-}
+    }
 }

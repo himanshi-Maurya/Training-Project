@@ -3,6 +3,9 @@ package com.example.demo.service;
 import com.example.demo.model.Employee;
 import com.example.demo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee getEmployeeById(Long id) {
         Optional<Employee> emp = employeeRepository.findById(id);
+
         return emp.get();
     }
 
@@ -46,12 +50,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee updateEmployee(Employee employee) {
 
-        Optional<Employee> emp = employeeRepository.findById(employee.getEmp_id());
+        Optional<Employee> emp = employeeRepository.findById(employee.getEmpId());
         if (emp.isPresent()) {
             employeeRepository.save(employee);
             return employee;
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Page<Employee> getEmployeeByName(String name, Pageable page) {
+        Page<Employee> employees = employeeRepository.getEmployeeByName(name, page);
+
+        return employees;
+    }
+
+    @Override
+    public Page<Employee> findPaginated(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return this.employeeRepository.findAll(pageable);
     }
 }

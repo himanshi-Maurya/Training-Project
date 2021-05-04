@@ -1,95 +1,65 @@
 package com.example.demo.model;
 
+import com.example.demo.audit.Auditable;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name = "employee")
-public class Employee {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@EntityListeners(AuditingEntityListener.class)
+public class Employee extends Auditable<String> {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long emp_id;
-
-    private String emp_name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(notes = "The database generated employee ID")
+    @Column(name = "empId")
+    private Long empId;
+    @ApiModelProperty(notes = "The name of the employee")
+    @Column(name = "empName")
+    private String empName;
+    @ApiModelProperty(notes = "The age of the employee")
+    @Column(name = "age")
     private Integer age;
-    private String department;
+    @ApiModelProperty(notes = "The name of the employee's department")
+    @Column(name = "gender")
+    private String gender;
+    @ApiModelProperty(notes = "The salary of the employee")
+    @Column(name = "salary")
     private int salary;
-    private String email_id;
+    @ApiModelProperty(notes = "The email-id of the employee")
+    @Column(name = "emailId")
+    private String emailId;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(name = "employeeDepartment", joinColumns = {@JoinColumn(name = "empId")},
+            inverseJoinColumns = {@JoinColumn(name = "depId")})
+    private List<Department> departments = new ArrayList<>();
 
-    public Employee(Long emp_id,
-                    String emp_name,
+    public Employee(Long empId,
+                    String empName,
                     Integer age,
-                    String department, int salary, String email_id) {
-        this.emp_id = emp_id;
-        this.emp_name = emp_name;
+                    String gender, int salary, String emailId) {
+        this.empId = empId;
+        this.empName = empName;
         this.age = age;
-        this.department = department;
+        this.gender = gender;
         this.salary = salary;
-        this.email_id = email_id;
+        this.emailId = emailId;
     }
 
-    public Employee() {
-
-    }
-
-    public Long getEmp_id() {
-        return emp_id;
-    }
-
-    public void setEmp_id(Long emp_id) {
-        this.emp_id = emp_id;
-    }
-
-    public String getEmp_name() {
-        return emp_name;
-    }
-
-    public void setEmp_name(String emp_name) {
-        this.emp_name = emp_name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public int getSalary() {
-        return salary;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
-    }
-
-    public String getEmail_id() {
-        return email_id;
-    }
-
-    public void setEmail_id(String email_id) {
-        this.email_id = email_id;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "emp_id=" + emp_id +
-                ", emp_name='" + emp_name + '\'' +
-                ", age=" + age +
-                ", department='" + department + '\'' +
-                ", salary=" + salary +
-                ", email_id='" + email_id + '\'' +
-                '}';
-    }
 }

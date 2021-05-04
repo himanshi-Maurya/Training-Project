@@ -1,55 +1,63 @@
 package com.example.demo.controller;
 
+import com.example.demo.converter.DepartmentConverter;
+import com.example.demo.dto.DepartmentDto;
 import com.example.demo.model.Department;
-import com.example.demo.repository.DepartmentRepository;
-import com.example.demo.Exception.ResourceNotFoundException;
+import com.example.demo.service.DepartmentService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
-//@RequestMapping(path="api/employee")
+@Api(value = "departmentData", description = "Operations pertaining to department")
+@RequestMapping(path = "api/departments")
 public class DepartmentController {
-
-    private final DepartmentRepository departmentRepository;
+    @Autowired
+    DepartmentService departmentService;
 
     @Autowired
-    public DepartmentController(DepartmentRepository departmentRepository) {
-        this.departmentRepository = departmentRepository;
+    DepartmentConverter converter;
+
+    @ApiOperation(value = "View a list of available departments", response = Iterable.class)
+    @GetMapping("/")
+    public List<DepartmentDto> getAllDepartments(Model model) {
+        return findPaginated(1, model);
     }
 
-
-    @GetMapping("/api/department")
-    public List<Department> getAllDepartment(){
-        return departmentRepository.findAll();
+    @ApiOperation(value = "Add a Department")
+    @PostMapping("/")
+    public ResponseEntity<DepartmentDto> saveDepartment(@RequestBody DepartmentDto dto) {
+        Department department = converter.dtoToEntity(dto);
+        departmentService.addDepartment(department);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(converter.entityToDto(department).getDepId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    @PostMapping("/api/department")
-    public Department createDepartment(@Validated @RequestBody Department department ){
-        return departmentRepository.save(department);
+    @ApiOperation(value = "Search a department with an ID", response = Department.class)
+    @GetMapping("/{id}")
+    public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable(value = "id") Long dep_id) {
+        Department department = departmentService.getDepartmentById(dep_id);
+        return ResponseEntity.ok().body(converter.entityToDto(department));
     }
 
-    @GetMapping("/api/department/{id}")
-    public ResponseEntity<Department> getDepartmentById(@PathVariable(value = "id") long id) throws ResourceNotFoundException {
-        Department department = departmentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Department not found for this id ::"+id));
-        return ResponseEntity.ok().body(department);
-    }
-
-    @PutMapping("/api/department/{id}")
-    public ResponseEntity<Department> updateDepartment(@PathVariable(value = "id") long id,
-                                                   @RequestBody Department departmentDetail) throws ResourceNotFoundException{
-        Department department = departmentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Department not found for this id ::"+id));
-        department.setDepartment_name(departmentDetail.getDepartment_name());
-        return ResponseEntity.ok().body(department);
-    }
-    @DeleteMapping("/api/department/{id}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable(value = "id") long id)throws ResourceNotFoundException{
-        departmentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Employee not found for this id ::"+id));
-
-        departmentRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @GetMapping("page/{pageNo}")
+    public List<DepartmentDto> findPaginated(@PathVariable(value = "pageNo") int pageNo, Model model) {
+        int pageSize = 3;
+        Page<Department> page = departmentService.findPaginated(pageNo, pageSize);
+        List<Department> departments = page.getContent();
+        List<DepartmentDto> dto = converter.entityToDto(departments);
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalItems", page.getTotalElements());
+        model.addAttribute("departments", dto);
+        return dto;
     }
 }

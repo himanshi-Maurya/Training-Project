@@ -1,44 +1,39 @@
 package com.example.demo.model;
 
+import com.example.demo.audit.Auditable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Department")
-public class Department {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@JsonIgnoreProperties(value = {"employeeSet"}, ignoreUnknown = true)
+@EntityListeners(AuditingEntityListener.class)
+public class Department extends Auditable<String> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String department_name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long depId;
+    @Column(nullable = false, updatable = false)
+    private String departmentName;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "departments")
+    private List<Employee> employees = new ArrayList<>();
 
-    public Department() {
+    public Department(Long depId, String departmentName) {
+        this.depId = depId;
+        this.departmentName = departmentName;
     }
 
-    public Department(Long id, String department_name) {
-        this.id = id;
-        this.department_name = department_name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDepartment_name() {
-        return department_name;
-    }
-
-    public void setDepartment_name(String department_name) {
-        this.department_name = department_name;
-    }
-
-    @Override
-    public String toString() {
-        return "Department{" +
-                "id=" + id +
-                ", department_name='" + department_name + '\'' +
-                '}';
-    }
 }

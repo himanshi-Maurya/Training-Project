@@ -33,13 +33,10 @@ public class EmployeeServiceTest {
         Employee empOne = new Employee(1L, "name1", 20, "tech-1", 1234, "name1@name1.com");
         Employee empTwo = new Employee(2L, "name2", 21, "tech-2", 1234, "name2@name2.com");
         Employee empThree = new Employee(3L, "name3", 22, "tech-3", 1234, "name3@name3.com");
-
         list.add(empOne);
         list.add(empTwo);
         list.add(empThree);
-
         Mockito.when(employeeRepository.findAll()).thenReturn(list);
-
         List<Employee> employeeList = employeeService.getAllEmployee();
         assertEquals(3, employeeList.size());
 
@@ -47,29 +44,26 @@ public class EmployeeServiceTest {
 
     @Test
     public void getEmployeeById() {
-        Employee emp = new Employee(1L, "name", 20, "Tech", 1234, "name@name.com");
-
+        Employee emp = new Employee(1L, "name", 20, "tech", 1234, "name@name.com");
         Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(emp));
-
         Employee employee = employeeService.getEmployeeById(1L);
-
-        assertEquals("name", employee.getEmp_name());
+        assertEquals("name", employee.getEmpName());
         assertEquals(20, employee.getAge());
-        assertEquals("tech", employee.getDepartment());
+        assertEquals("tech", employee.getGender());
         assertEquals(1234, employee.getSalary());
-        assertEquals("name@name.com", employee.getEmail_id());
+        assertEquals("name@name.com", employee.getEmailId());
     }
 
     @Test
     public void createEmployee() {
-        Employee emp = new Employee(1L, "name", 20, "Tech", 1234, "name@name.com");
-        Mockito.when(employeeRepository.save(emp)).thenReturn(emp);
+        Employee emp = new Employee(1L, "name", 20, "tech", 1234, "name@name.com");
+        Mockito.when(employeeRepository.save(Mockito.any())).thenReturn(emp);
         Employee employee = employeeService.createEmployee(emp);
-        assertEquals("name", employee.getEmp_name());
+        assertEquals("name", employee.getEmpName());
         assertEquals(20, employee.getAge());
-        assertEquals("tech", employee.getDepartment());
+        assertEquals("tech", employee.getGender());
         assertEquals(1234, employee.getSalary());
-        assertEquals("name@name.com", employee.getEmail_id());
+        assertEquals("name@name.com", employee.getEmailId());
     }
 
     @Test
@@ -82,9 +76,8 @@ public class EmployeeServiceTest {
     public void updateEmployee() {
         Employee emp1 = new Employee(1L, "name1", 20, "tech1", 1234, "name1@name1.com");
         Employee emp2 = new Employee(2L, "name2", 21, "tech2", 1234, "name2@name2.com");
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(emp1));
-        Mockito.when(employeeRepository.save(emp2)).thenReturn(emp2);
-
+        Mockito.when(employeeRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(emp1));
+        Mockito.when(employeeRepository.save(emp1)).thenReturn(emp2);
         Employee employee = employeeService.updateEmployee(emp2);
         assertEquals(emp2, employee);
     }

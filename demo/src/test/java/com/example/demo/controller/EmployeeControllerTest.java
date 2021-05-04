@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
+import com.example.demo.converter.EmployeeConverter;
+import com.example.demo.dto.EmployeeDto;
 import com.example.demo.model.Employee;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.service.EmployeeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -10,7 +14,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -23,85 +26,102 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = EmployeeController.class)
 class EmployeeControllerTest {
-
-
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
-    EmployeeService employeeService;
+    EmployeeConverter converter;
 
     @MockBean
-    EmployeeRepository employeeRepository;
-
-    String example = "{\"name\":\"himanshi\",\"himanshi\":\"doe\",\"age\":21,\"gender\":\"male\",\"salary\":33000,\"email\":\"john@gmail.com\"}";
+    EmployeeService employeeService;
 
     @Test
-    void getAllEmployees() throws Exception {
+    void testGetAllEmployees() throws Exception {
         List<Employee> employees = new ArrayList<>();
-        employees.add(new Employee(1l, "name", 21, "tech-team", 1234, "name@name.com"));
+        employees.add(new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com"));
+
+        List<EmployeeDto> employeess = new ArrayList<>();
+        employeess.add(new EmployeeDto(1L, "name1", 12, "female", 1234, "name1@name1.com"));
 
         Mockito.when(employeeService.getAllEmployee()).thenReturn(employees);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/employee/").accept(MediaType.APPLICATION_JSON);
+        Mockito.when(converter.entityToDto(employees)).thenReturn(employeess);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/employees/").accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-
-        String expected = "[{\"emp_id\":1,\"emp_name\":\"name\",\"age\":21,\"department\":\"tech-team\",\"salary\":1234,\"email_id\":\"name@name.com\"}]";
-
-
+        String expected = "[{\"empId\":1,\"empName\":\"name1\",\"age\":12,\"gender\":\"female\",\"salary\":1234,\"emailId\":\"name1@name1.com\",\"departments\":[]}]";
         assertEquals(expected, result.getResponse().getContentAsString());
     }
 
     @Test
-    void getEmployeeById() throws Exception {
-        Employee employee = new Employee(1l, "name", 20, "tech-team", 1234, "name@name.com");
+    void testGetEmployeeById() throws Exception {
+        Employee employee = new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com");
+
+        EmployeeDto dto = new EmployeeDto(1l, "name", 12, "female", 1234, "name1@name1.com");
 
         Mockito.when(employeeService.getEmployeeById(Mockito.anyLong())).thenReturn(employee);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/employee/1").accept(MediaType.APPLICATION_JSON);
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        Mockito.when(converter.entityToDto(employee)).thenReturn(dto);
 
-        String example = "{\"emp_id\":1,\"emp_name\":\"name\",\"age\":20,\"department\":\"tech-team\",\"salary\":1234,\"email_id\":\"name@name.com\"}";
-        assertEquals(example, result.getResponse().getContentAsString());
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/employees/1").accept(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        String expected = "{\"empId\":1,\"empName\":\"name\",\"age\":12,\"gender\":\"female\",\"salary\":1234,\"emailId\":\"name1@name1.com\",\"departments\":[]}";
+        assertEquals(expected, result.getResponse().getContentAsString());
     }
 
+
     @Test
-    void testCreateEmployee() throws Exception {
+    public void testCreateEmployee() throws Exception {
+        Employee employee = new Employee(1L, "name1", 12, "female", 1234, "name1@name1.com");
 
-        Employee employee = new Employee(1L, "name", 20, "tech-team", 1234, "name@name.com");
+        EmployeeDto dto = new EmployeeDto(1L, "name1", 12, "female", 1234, "name1@name1.com");
 
+        Mockito.when(converter.dtoToEntity(dto)).thenReturn(employee);
         Mockito.when(employeeService.createEmployee(new Employee())).thenReturn(employee);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/employee/").accept(MediaType.APPLICATION_JSON).content(example).contentType(MediaType.APPLICATION_JSON);
+        Mockito.when(converter.entityToDto(employee)).thenReturn(dto);
 
+        String URI = "http://localhost/api/employees/";
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(URI).accept(MediaType.APPLICATION_JSON).content(mapToJson(dto)).contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
 
+        String actual = response.getContentAsString();
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
-        assertEquals("http://localhost/api/employee/",
-                response.getHeader(HttpHeaders.LOCATION));
+
     }
 
     @Test
-    void deleteEmployee() throws Exception {
+    void testDeleteEmployee() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/employee/0").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 
-
     @Test
-    void updateEmployee() throws Exception {
-        Employee employee = new Employee(1l, "name", 20, "tech-team", 1234, "name@name.com");
-        Mockito.when(employeeService.updateEmployee(Mockito.any(Employee.class))).thenReturn(employee);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("http://localhost:8080/api/employee/1").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(example);
+    void testUpdateEmployee() throws Exception {
+        Employee employee = new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com");
 
+        EmployeeDto dto = new EmployeeDto(1l, "name1", 12, "female", 1234, "name1@name1.com");
+
+        Mockito.when(converter.dtoToEntity(dto)).thenReturn(employee);
+        Mockito.when(employeeService.updateEmployee(Mockito.any(Employee.class))).thenReturn(employee);
+        Mockito.when(converter.entityToDto(employee)).thenReturn(dto);
+
+        String URI = "http://localhost:8080/api/employees/1";
+        String expected = "{\"empId\":1,\"empName\":\"name1\",\"age\":12,\"gender\":\"female\",\"salary\":1234,\"emailId\":\"name1@name1.com\",\"departments\":[]}";
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put(URI).accept(MediaType.APPLICATION_JSON).content(mapToJson(dto)).contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
-
-        String expected = "{emp_id:1,emp_name:name,age:20,department:tech-team,salary:1234,email_id:name@name.com}";
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
+    }
+
+    private String mapToJson(Object object) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(object);
     }
 }

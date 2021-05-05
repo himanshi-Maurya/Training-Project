@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.EmployeeDto;
 import com.example.demo.model.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,5 +20,7 @@ public interface EmployeeService {
 
     Page<Employee> getEmployeeByName(String name, Pageable page);
 
-    Page<Employee> findPaginated(int pageNo, int pageSize);
+    List<Employee> getFirstFiveEmployees();
+
+    Page<EmployeeDto> findPaginated(int pageNo, int pageSize, String sortBy);
 }

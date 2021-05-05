@@ -1,0 +1,25 @@
+version: '3.5'
+services:
+  postgresqldb:
+    image: postgres:alpine
+    restart: always
+    container_name: "postgresqldb"
+    environment:
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=oauthdb
+      - POSTGRES_HOST=postgresqldb
+      - POSTGRES_PASSWORD=hrhk
+      - POSTGRES_USER=postgres
+    ports:
+      - 5432:5432
+
+  web:
+    build: ./
+    links:
+      - postgresqldb
+    container_name: crud-service
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresqldb

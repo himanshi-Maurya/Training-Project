@@ -46,7 +46,7 @@ class EmployeeControllerTest {
     @Test
     void testGetAllEmployees() throws Exception {
         List<Employee> employees = new ArrayList<>();
-        employees.add(new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com"));
+        employees.add(new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com",false));
 
         List<EmployeeDto> employeess = new ArrayList<>();
         employeess.add(new EmployeeDto(1L, "name1", 12, "female", 1234, "name1@name1.com"));
@@ -62,7 +62,7 @@ class EmployeeControllerTest {
 
     @Test
     void testGetEmployeeById() throws Exception {
-        Employee employee = new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com");
+        Employee employee = new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com",false);
 
         EmployeeDto dto = new EmployeeDto(1l, "name", 12, "female", 1234, "name1@name1.com");
 
@@ -78,7 +78,7 @@ class EmployeeControllerTest {
 
     @Test
     public void testCreateEmployee() throws Exception {
-        Employee employee = new Employee(1L, "name1", 12, "female", 1234, "name1@name1.com");
+        Employee employee = new Employee(1L, "name1", 12, "female", 1234, "name1@name1.com",false);
 
         EmployeeDto dto = new EmployeeDto(1L, "name1", 12, "female", 1234, "name1@name1.com");
 
@@ -103,7 +103,7 @@ class EmployeeControllerTest {
 
     @Test
     void testUpdateEmployee() throws Exception {
-        Employee employee = new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com");
+        Employee employee = new Employee(1l, "name1", 12, "female", 1234, "name1@name1.com",false);
 
         EmployeeDto dto = new EmployeeDto(1l, "name1", 12, "female", 1234, "name1@name1.com");
 

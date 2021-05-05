@@ -7,9 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +48,9 @@ public class Employee extends Auditable<String> {
     @ApiModelProperty(notes = "The email-id of the employee")
     @Column(name = "emailId")
     private String emailId;
+    @ApiModelProperty(notes = "The email-id of the employee")
+    @Column(name = "deleted")
+    private Boolean deleted = false;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "employeeDepartment", joinColumns = {@JoinColumn(name = "empId")},
@@ -53,13 +60,14 @@ public class Employee extends Auditable<String> {
     public Employee(Long empId,
                     String empName,
                     Integer age,
-                    String gender, int salary, String emailId) {
+                    String gender, int salary, String emailId,Boolean deleted) {
         this.empId = empId;
         this.empName = empName;
         this.age = age;
         this.gender = gender;
         this.salary = salary;
         this.emailId = emailId;
+        this.deleted = deleted;
     }
 
 }

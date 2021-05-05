@@ -1,11 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.EmployeeDto;
 import com.example.demo.model.Employee;
 import com.example.demo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public String deleteEmployee(Long id) {
-        employeeRepository.deleteById(id);
+        employeeRepository.isDeleted(id);
         return "Success";
     }
 
@@ -67,8 +69,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Page<Employee> findPaginated(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        return this.employeeRepository.findAll(pageable);
+    public List<Employee> getFirstFiveEmployees() {
+        List<Employee> employees = employeeRepository.getFirstFiveEmployees();
+        return employees;
+    }
+
+    @Override
+    public Page<EmployeeDto> findPaginated(int pageNo, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by(sortBy).descending());
+        return this.employeeRepository.getAllEmployees(pageable);
     }
 }

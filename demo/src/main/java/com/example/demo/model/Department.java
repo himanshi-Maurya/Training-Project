@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@JsonIgnoreProperties(value = {"employeeSet"}, ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"employees"}, ignoreUnknown = true)
 @EntityListeners(AuditingEntityListener.class)
 public class Department extends Auditable<String> {
     @Id

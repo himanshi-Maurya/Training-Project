@@ -12,10 +12,8 @@ import java.util.stream.Collectors;
 public class DepartmentConverter {
     public DepartmentDto entityToDto(Department department) {
         DepartmentDto departmentDto = new DepartmentDto();
-        departmentDto.setDepId(department.getDepId());
+        departmentDto.setDepId(department.getId());
         departmentDto.setDepartmentName(department.getDepartmentName());
-        // departmentDto.setIsDeleted(department.getIsDeleted());
-        //departmentDto.setEmployeeDto(department.getEmployees());
         return departmentDto;
     }
 
@@ -25,10 +23,8 @@ public class DepartmentConverter {
 
     public Department dtoToEntity(DepartmentDto departmentDto) {
         Department department = new Department();
-        department.setDepId(departmentDto.getDepId());
+        department.setId(departmentDto.getDepId());
         department.setDepartmentName(departmentDto.getDepartmentName());
-        //  department.setIsDeleted(departmentDto.getIsDeleted());
-
         return department;
     }
 

@@ -17,7 +17,7 @@ public class EmployeeConverter {
 
     public EmployeeDto entityToDto(Employee employee) {
         EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setEmpId(employee.getEmpId());
+        employeeDto.setEmpId(employee.getId());
         employeeDto.setEmpName(employee.getEmpName());
         employeeDto.setAge(employee.getAge());
         employeeDto.setGender(employee.getGender());
@@ -33,7 +33,7 @@ public class EmployeeConverter {
 
     public Employee dtoToEntity(EmployeeDto dto) {
         Employee employee = new Employee();
-        employee.setEmpId(dto.getEmpId());
+        employee.setId(dto.getEmpId());
         employee.setEmpName(dto.getEmpName());
         employee.setAge(dto.getAge());
         employee.setGender(dto.getGender());

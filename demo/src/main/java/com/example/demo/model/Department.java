@@ -25,14 +25,14 @@ import java.util.List;
 public class Department extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long depId;
+    private Long id;
     @Column(nullable = false, updatable = false)
     private String departmentName;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "departments")
     private List<Employee> employees = new ArrayList<>();
 
-    public Department(Long depId, String departmentName) {
-        this.depId = depId;
+    public Department(Long id, String departmentName) {
+        this.id = id;
         this.departmentName = departmentName;
     }
 

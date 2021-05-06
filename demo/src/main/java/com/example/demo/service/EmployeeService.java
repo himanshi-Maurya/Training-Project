@@ -8,19 +8,19 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface EmployeeService {
-    public Employee getEmployeeById(Long id);
+    public EmployeeDto getEmployeeById(Long id) ;
 
-    public List<Employee> getAllEmployee();
+  //  public List<Employee> getAllEmployee();
 
-    public Employee createEmployee(Employee employee);
+    public EmployeeDto createEmployee(EmployeeDto employeeDto);
 
-    public String deleteEmployee(Long id);
+    public String deleteEmployee(Long id) ;
 
-    Employee updateEmployee(Employee employee);
+    EmployeeDto updateEmployee(EmployeeDto dto, Long id) ;
 
     Page<Employee> getEmployeeByName(String name, Pageable page);
 
-    List<Employee> getFirstFiveEmployees();
+    List<EmployeeDto> getFirstFiveEmployees();
 
-    Page<EmployeeDto> findPaginated(int pageNo, int pageSize, String sortBy);
+    Page<EmployeeDto> findPaginated(int pageNo, int pageSize, String sortBy) throws InterruptedException;
 }

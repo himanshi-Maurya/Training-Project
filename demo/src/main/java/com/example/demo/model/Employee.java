@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -32,7 +31,7 @@ public class Employee extends Auditable<String> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "The database generated employee ID")
     @Column(name = "empId")
-    private Long empId;
+    private Long id;
     @ApiModelProperty(notes = "The name of the employee")
     @Column(name = "empName")
     private String empName;
@@ -57,11 +56,11 @@ public class Employee extends Auditable<String> {
             inverseJoinColumns = {@JoinColumn(name = "depId")})
     private List<Department> departments = new ArrayList<>();
 
-    public Employee(Long empId,
+    public Employee(Long id,
                     String empName,
                     Integer age,
                     String gender, int salary, String emailId,Boolean deleted) {
-        this.empId = empId;
+        this.id = id;
         this.empName = empName;
         this.age = age;
         this.gender = gender;

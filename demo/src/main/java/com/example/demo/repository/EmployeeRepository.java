@@ -20,12 +20,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     public Page<Employee> getEmployeeByName(@Param("n") String name, Pageable pePageable);
 
   //  @Query(value = "SELECT * FROM Employee WHERE deleted=false",nativeQuery = true)
-    @Query("SELECT new com.example.demo.dto.EmployeeDto(a.empId,a.empName,a.age,a.gender,a.salary,a.emailId) FROM Employee a WHERE a.deleted=false")
+   // @Query("SELECT new com.example.demo.dto.EmployeeDto(a.id,a.empName,a.age,a.gender,a.salary,a.emailId) FROM Employee a WHERE a.deleted=false")
+  @Query(value = "SELECT new com.example.demo.dto.EmployeeDto(e.id,e) FROM Employee e WHERE e.deleted=false")
     public Page<EmployeeDto> getAllEmployees(Pageable pePageable);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE  Employee e  set e.deleted = true where e.empId=:n")
+    @Query(value = "UPDATE  Employee e  set e.deleted = true where e.id=:n")
     public void isDeleted(@Param("n") Long empId);
 
     @Query(value="SELECT * FROM Employee ORDER BY salary LIMIT 5", nativeQuery=true)
